@@ -6,32 +6,35 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.example.entity.Account;
+import com.example.exception.AccountCreationException;
+import com.example.exception.DuplicateUsernameException;
+import com.example.exception.UnauthorizedLoginException;
 import com.example.util.ConnectionUtil;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class AccountRepository {
+    @Autowired
+    ConnectionUtil connectionUtil;
 
-    public AccountRepository() {;
-    }
-    
-    public Account regAccount(Account account) {
+    public Account registerAccount(Account account) {
         String accountName = account.getUsername();
         String accountPass = account.getPassword();
         
-        if (accountName == ""
-                || accountPass.length()>3
-                || getAccountByName(accountName) != null) {
-            return null;
+        if (accountName == "" || accountPass.length() < 4) {
+            throw new AccountCreationException();
+        } else if (getAccountByName(accountName) != null) {
+            throw new DuplicateUsernameException(accountName);
         }
 
         try {
-            Connection connection = ConnectionUtil.getConnection();
+            Connection connection = connectionUtil.getConnection();
             String sql = "INSERT INTO account (username,password) VALUES (?,?);";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, accountName);
-            preparedStatement.setString(1, accountPass);
+            preparedStatement.setString(2, accountPass);
             int rowsChanged = preparedStatement.executeUpdate();
             if (rowsChanged == 1) {
                 return getAccountByName(accountName);
@@ -44,7 +47,7 @@ public class AccountRepository {
 
     public Account getAccountByName(String name) {
         try {
-            Connection connection = ConnectionUtil.getConnection();
+            Connection connection = connectionUtil.getConnection();
             String sql = "SELECT * FROM account WHERE username = ?;";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, name);
@@ -57,7 +60,30 @@ public class AccountRepository {
                 );
             }
             
-        } catch (Exception e) {
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public Account login(Account account) {
+        try {
+            Connection connection = connectionUtil.getConnection();
+            String sql = "SELECT * FROM account WHERE username = ? AND password = ?;";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, account.getUsername());
+            preparedStatement.setString(2, account.getPassword());
+            ResultSet rs = preparedStatement.executeQuery();
+            if (rs.next()) {
+                return new Account(
+                    rs.getInt("accountId"),
+                    rs.getString("username"),
+                    rs.getString("password")
+                );
+            } else {
+                throw new UnauthorizedLoginException();
+            }
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
