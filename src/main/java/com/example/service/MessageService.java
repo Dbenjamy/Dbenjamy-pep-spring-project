@@ -29,7 +29,7 @@ public class MessageService {
     }
 
     public List<Message> getAllMessages() {
-        return messageRepository.findAll();
+        return (List<Message>)messageRepository.findAll();
     }
 
     public Message getMessageById(int messageId) {
