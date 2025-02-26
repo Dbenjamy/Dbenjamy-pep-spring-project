@@ -7,13 +7,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class ExceptionController {
-    
+
     @ExceptionHandler(DuplicateUsernameException.class)
-    @ResponseStatus(HttpStatus .CONFLICT)
+    @ResponseStatus(HttpStatus.CONFLICT)
     public String handleDuplicateUsernameException(RuntimeException e) {
         return e.getMessage();
     }
-    
+
     @ExceptionHandler(AccountCreationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String handleAccountCreationException(RuntimeException e) {
@@ -25,10 +25,16 @@ public class ExceptionController {
     public String handleUnauthorizedLoginException(RuntimeException e) {
         return e.getMessage();
     }
-    
-    // @ExceptionHandler(RuntimeException.class)
-    // @ResponseStatus(HttpStatus.OK)
-    // public void handleEverythingElse(RuntimeException e) {
-    //     System.out.println("\n###\n"+e.getMessage()+"\n###");
-    // }
+
+    @ExceptionHandler(MessageCreationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleMessageCreationException(RuntimeException e) {
+        return e.getMessage();
+    }
+
+    @ExceptionHandler(UpdateMessageException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleUpdateMessageException(RuntimeException e) {
+        return e.getMessage();
+    }
 }

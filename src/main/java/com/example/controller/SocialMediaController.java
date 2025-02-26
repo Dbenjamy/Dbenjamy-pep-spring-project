@@ -1,12 +1,19 @@
 package com.example.controller;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.entity.Account;
+import com.example.entity.Message;
 import com.example.service.AccountService;
 import com.example.service.MessageService;
 
@@ -21,8 +28,8 @@ public class SocialMediaController {
 
     @Autowired
     private AccountService accountService;
-    // @Autowired
-    // private MessageService messageService;
+    @Autowired
+    private MessageService messageService;
 
     @PostMapping("register")
     public Account registerAccount(@RequestBody Account account) {
@@ -34,16 +41,36 @@ public class SocialMediaController {
         return accountService.login(account);
     }
 
-    // @PostMapping("register")
-    // public ResponseEntity<Account> registerAccount(@RequestBody Account account) {
-    //     Account newAccount = accountService.registerAccount(account);
-    //     return ResponseEntity
-    //         .status(200)
-    //         .header("content-type", "application/json")
-    //         .body(newAccount);
-    // }
+    @PostMapping("messages")
+    public Message createMessage(@RequestBody Message message) {
+        return messageService.createMessage(message);
+    }
 
+    @GetMapping("messages")
+    public List<Message> getAllMessages() {
+        return messageService.getAllMessages();
+    }
 
+    @GetMapping("messages/{messageId}")
+    public Message getMessageById(@PathVariable int messageId) {
+        return messageService.getMessageById(messageId);
+    }
 
+    @DeleteMapping("messages/{messageId}")
+    public Integer deleteMessageById(@PathVariable int messageId) {
+        return messageService.deleteMessageById(messageId);
+    }
 
+    @PatchMapping("messages/{messageId}")
+    public int updateMessageById(@PathVariable int messageId,
+            @RequestBody Map<String, String> messageText) {
+        return messageService.updateMessageById(
+            messageId,
+            messageText.get("messageText"));
+    }
+
+    @GetMapping("accounts/{accountId}/messages")
+    public List<Message> getAllMessagesFromAccount(@PathVariable int accountId) {
+        return messageService.getAllMessagesFromAccount(accountId);
+    }
 }

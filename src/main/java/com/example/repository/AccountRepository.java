@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.example.entity.Account;
 import com.example.exception.AccountCreationException;
@@ -22,7 +24,7 @@ public class AccountRepository {
     public Account registerAccount(Account account) {
         String accountName = account.getUsername();
         String accountPass = account.getPassword();
-        
+
         if (accountName == "" || accountPass.length() < 4) {
             throw new AccountCreationException();
         } else if (getAccountByName(accountName) != null) {
@@ -59,7 +61,7 @@ public class AccountRepository {
                     rs.getString("password")
                 );
             }
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -88,4 +90,28 @@ public class AccountRepository {
         }
         return null;
     }
+
+    // public List<Account> findAll() {
+    //     List<Account> accounts = new ArrayList<>();
+    //     try {
+    //         Connection connection = connectionUtil.getConnection();
+    //         String sql = "SELECT * FROM account;";
+    //         PreparedStatement preparedStatement = connection.prepareStatement(sql);
+    //         ResultSet rs = preparedStatement.executeQuery();
+    //         while (rs.next()) {
+    //             accounts.add(new Account(
+    //                 rs.getInt("accountId"),
+    //                 rs.getString("username"),
+    //                 rs.getString("password")
+    //             ));
+    //         }
+    //     } catch (SQLException e) {
+    //         e.printStackTrace();
+    //     }
+    //     return accounts;
+    // }
+
+    // public int save(int num) {
+    //     return 1;
+    // }
 }

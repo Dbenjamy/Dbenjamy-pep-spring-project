@@ -18,6 +18,4 @@ public class AccountService {
     public Account login(Account account) {
         return accountRepository.login(account);
     }
-
-    
 }
