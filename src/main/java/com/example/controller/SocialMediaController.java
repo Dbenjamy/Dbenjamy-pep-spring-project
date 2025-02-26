@@ -58,15 +58,17 @@ public class SocialMediaController {
 
     @DeleteMapping("messages/{messageId}")
     public Integer deleteMessageById(@PathVariable int messageId) {
-        return messageService.deleteMessageById(messageId);
+        boolean success = messageService.deleteMessageById(messageId);
+        return success? 1:null;
     }
 
     @PatchMapping("messages/{messageId}")
     public int updateMessageById(@PathVariable int messageId,
             @RequestBody Map<String, String> messageText) {
-        return messageService.updateMessageById(
+        messageService.updateMessageById(
             messageId,
             messageText.get("messageText"));
+        return 1;
     }
 
     @GetMapping("accounts/{accountId}/messages")
